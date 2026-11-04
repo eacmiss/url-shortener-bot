@@ -10,7 +10,7 @@ from fastapi import FastAPI, Request
 
 load_dotenv()
 
-DATA_FILE = "url_data.json"
+DATA_FILE = "/tmp/url_data.json" if os.getenv("VERCEL") else "url_data.json"
 
 def load_data():
     if os.path.exists(DATA_FILE):
@@ -42,6 +42,7 @@ def get_bot_app():
         bot_app.add_handler(CommandHandler("start", start))
         bot_app.add_handler(CallbackQueryHandler(handle_callback))
         bot_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_url))
+        bot_app.add_handler(MessageHandler(filters.COMMAND, handle_url))
     return bot_app
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -291,7 +292,9 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif data == "back_main":
         await back_main(update, context)
 
+@app.post("/")
 @app.post("/webhook")
+@app.post("/api/webhook")
 async def webhook(request: Request):
     """Обработка Telegram webhook"""
     application = get_bot_app()

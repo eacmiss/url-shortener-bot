@@ -297,6 +297,7 @@ def main():
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CallbackQueryHandler(handle_callback))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_url))
+    application.add_handler(MessageHandler(filters.COMMAND, handle_url))
     
     print("Бот для сокращения ссылок запущен...")
     application.run_polling()
